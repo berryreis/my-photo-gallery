@@ -7,18 +7,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     galleryItems.forEach(item => {
         item.addEventListener("mouseenter", function () {
+            // Hide the thumbnail by adding a class
+            item.classList.add("hovered");
+
             // Set preview image source and details
             const imgSrc = item.querySelector("img").src;
             previewImg.src = imgSrc;
             cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera")}`;
             lensInfo.textContent = `Lens: ${item.getAttribute("data-lens")}`;
 
-            // Show the preview section with details at the bottom
+            // Show the preview section with details in the center
             preview.style.visibility = "visible";
             preview.style.opacity = "1";
         });
 
         item.addEventListener("mouseleave", function () {
+            // Remove the 'hovered' class to show the thumbnail again
+            item.classList.remove("hovered");
+
             // Hide the preview section when no image is hovered
             preview.style.visibility = "hidden";
             preview.style.opacity = "0";
