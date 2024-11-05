@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera")}`;
             lensInfo.textContent = `Lens: ${item.getAttribute("data-lens")}`;
 
-            // Show the preview section with details
+            // Show the preview section with details at the bottom
             preview.style.visibility = "visible";
             preview.style.opacity = "1";
         });
