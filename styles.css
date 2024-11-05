@@ -36,6 +36,8 @@ body {
     margin-top: 20px;
     text-align: center;
     max-width: 80%;
+    visibility: hidden; /* Hidden by default */
+    transition: visibility 0.3s, opacity 0.3s ease;
 }
 
 .preview img {
@@ -51,6 +53,10 @@ body {
 }
 
 .image-item:hover {
-    transform: scale(1.1);
-}
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2); /* Move to center and enlarge */
+    z-index: 10; /* Bring it on top of other images */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);}
 
