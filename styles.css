@@ -15,6 +15,7 @@ body {
     width: 80%;
     justify-content: center;
     margin-top: 20px;
+    position: relative;
 }
 
 .image-item {
