@@ -15,7 +15,6 @@ body {
     width: 80%;
     justify-content: center;
     margin-top: 20px;
-    position: relative;
 }
 
 .image-item {
@@ -34,12 +33,10 @@ body {
     transition: opacity 0.3s ease;
 }
 
-/* Hide the image-item when hovering by making it transparent */
 .image-item.hovered img {
     opacity: 0;
 }
 
-/* Centered preview container */
 .preview {
     position: fixed;
     top: 50%;
@@ -49,6 +46,7 @@ body {
     opacity: 0;
     transition: visibility 0.3s, opacity 0.3s ease;
     text-align: center;
+    z-index: 1000;
 }
 
 .preview img {
