@@ -8,29 +8,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     galleryItems.forEach(item => {
         item.addEventListener("mouseenter", function () {
-            // Hide the thumbnail by adding a class
+            // Apply class for hover effect
             item.classList.add("hovered");
 
-            // Set preview image source and details
+            // Set preview content and display it
             const imgSrc = item.querySelector("img").src;
             previewImg.src = imgSrc;
 
-            imageInfo.textContent = `${item.getAttribute("data-image")}`;
-            cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera")}`;
-            lensInfo.textContent = `${item.getAttribute("data-lens")}`;
+            imageInfo.textContent = item.getAttribute("data-image") || "Image Info";
+            cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera") || "N/A"}`;
+            lensInfo.textContent = `Lens: ${item.getAttribute("data-lens") || "N/A"}`;
 
-            // Show the preview section with details in the center
+            // Make preview visible
             preview.style.visibility = "visible";
             preview.style.opacity = "1";
         });
 
         item.addEventListener("mouseleave", function () {
-            // Remove the 'hovered' class to show the thumbnail again
+            // Remove hover effect class
             item.classList.remove("hovered");
 
-            // Hide the preview section when no image is hovered
-            preview.style.visibility = "hidden";
-            preview.style.opacity = "0";
+            // Hide the preview with a slight delay to avoid flicker
+            setTimeout(() => {
+                preview.style.visibility = "hidden";
+                preview.style.opacity = "0";
+            }, 100); // delay to ensure smooth transition
         });
     });
 });
