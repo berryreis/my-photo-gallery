@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".image-item");
     const preview = document.querySelector(".preview");
     const previewImg = document.getElementById("preview-img");
-    const imageInfo = document.getElementById("image-ingo");
+    const imageInfo = document.getElementById("image-info");
     const cameraInfo = document.getElementById("camera-info");
     const lensInfo = document.getElementById("lens-info");
 
