@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
             previewImg.src = imgSrc;
 
             imageInfo.textContent = item.getAttribute("data-image") || "Image Info";
-            cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera") || "N/A"}`;
-            lensInfo.textContent = `Lens: ${item.getAttribute("data-lens") || "N/A"}`;
+            cameraInfo.textContent = `${item.getAttribute("data-camera") || "N/A"}`;
+            lensInfo.textContent = `${item.getAttribute("data-lens") || "N/A"}`;
 
             // Make preview visible
             preview.style.visibility = "visible";
