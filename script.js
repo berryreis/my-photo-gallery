@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".image-item");
     const preview = document.querySelector(".preview");
     const previewImg = document.getElementById("preview-img");
+    const imageInfo = document.getElementById("image-ingo");
     const cameraInfo = document.getElementById("camera-info");
     const lensInfo = document.getElementById("lens-info");
 
@@ -13,8 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set preview image source and details
             const imgSrc = item.querySelector("img").src;
             previewImg.src = imgSrc;
+
+            imageInfo.textContent = `${item.getAttribute("data-image")}`;
             cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera")}`;
-            lensInfo.textContent = `Lens: ${item.getAttribute("data-lens")}`;
+            lensInfo.textContent = `${item.getAttribute("data-lens")}`;
 
             // Show the preview section with details in the center
             preview.style.visibility = "visible";
