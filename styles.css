@@ -1,11 +1,16 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Times New Roman, serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+}
+
+h1 {
+    font-size: 20px;
+    
 }
 
 .gallery {
@@ -23,7 +28,7 @@ body {
     overflow: hidden;
     cursor: pointer;
     position: relative;
-    transition: transform 0.3s;
+    transition: transform 0.5s;
 }
 
 .image-item img {
@@ -35,6 +40,7 @@ body {
 
 .image-item.hovered img {
     opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 .preview {
@@ -44,7 +50,7 @@ body {
     transform: translate(-50%, -50%);
     visibility: hidden;
     opacity: 0;
-    transition: visibility 0.3s, opacity 0.3s ease;
+    transition: visibility 0.5s, opacity 0.5s ease;
     text-align: center;
     z-index: 1000;
 }
