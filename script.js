@@ -58,7 +58,7 @@
                 const imgSrc = item.querySelector("img").src;
                 previewImg.src = imgSrc;
 
-                // Show the preview section with details in the center
+                // Make the preview section visible
                 preview.style.visibility = "visible";
                 preview.style.opacity = "1";
 
@@ -76,7 +76,7 @@
                     lensInfo.textContent = `Focal Length: ${focalLength}`;
                 });
 
-            }, 300); 
+            }, 300);
         });
 
         item.addEventListener("mouseleave", function () {
@@ -88,5 +88,3 @@
         });
     });
 });
-
-
