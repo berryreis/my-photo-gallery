@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".image-item");
     const preview = document.querySelector(".preview");
     const previewImg = document.getElementById("preview-img");
@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cameraInfo = document.getElementById("camera-info");
     const lensInfo = document.getElementById("lens-info");
 
-    /* galleryItems.forEach(item => {
+     galleryItems.forEach(item => {
         item.addEventListener("mouseenter", function () {
             
            clearTimeout(hoverTimeout);
