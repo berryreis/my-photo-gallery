@@ -8,31 +8,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     galleryItems.forEach(item => {
         item.addEventListener("mouseenter", function () {
-            // Apply class for hover effect
-            item.classList.add("hovered");
+            
+           clearTimeout(hoverTimeout);
 
-            // Set preview content and display it
-            const imgSrc = item.querySelector("img").src;
-            previewImg.src = imgSrc;
+            hoverTimeout = setTimeout(() => {
+                item.classList.add("hovered");
 
-            imageInfo.textContent = item.getAttribute("data-image") || "Image Info";
-            cameraInfo.textContent = `${item.getAttribute("data-camera") || "N/A"}`;
-            lensInfo.textContent = `${item.getAttribute("data-lens") || "N/A"}`;
+                const imgSrc = item.querySelector("img").src;
+                previewImg.src = imgSrc;
 
-            // Make preview visible
-            preview.style.visibility = "visible";
-            preview.style.opacity = "1";
+                imageInfo.textContent = item.getAttribute("data-image") || "Image Info Unavailable";
+                cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera") || "Unknown"}`;
+                lensInfo.textContent = `Lens: ${item.getAttribute("data-lens") || "Unknown"}`;
+
+                preview.style.visibility = "visible";
+                preview.style.opacity = "1";
+            }, 300); 
         });
+    
 
         item.addEventListener("mouseleave", function () {
-            // Remove hover effect class
-            item.classList.remove("hovered");
+            clearTimeout(hoverTimeout); 
 
-            // Hide the preview with a slight delay to avoid flicker
-            setTimeout(() => {
-                preview.style.visibility = "hidden";
-                preview.style.opacity = "0";
-            }, 100); // delay to ensure smooth transition
-        });
+            item.classList.remove("hovered");
+            preview.style.visibility = "hidden";
+            preview.style.opacity = "0";
     });
 });
+});
+
