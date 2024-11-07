@@ -39,7 +39,7 @@
 }); */
 
 
-    document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const galleryItems = document.querySelectorAll(".image-item");
     const preview = document.querySelector(".preview");
     const previewImg = document.getElementById("preview-img");
@@ -58,6 +58,11 @@
                 const imgSrc = item.querySelector("img").src;
                 previewImg.src = imgSrc;
 
+                // Set the initial preview information from data- attributes
+                imageInfo.textContent = item.getAttribute("data-image") || "Image Info Unavailable";
+                cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera") || "Unknown"}`;
+                lensInfo.textContent = `Lens: ${item.getAttribute("data-lens") || "Unknown"}`;
+
                 // Make the preview section visible
                 preview.style.visibility = "visible";
                 preview.style.opacity = "1";
@@ -66,16 +71,15 @@
                 EXIF.getData(item.querySelector("img"), function() {
                     const make = EXIF.getTag(this, "Make") || "Unknown Make";
                     const model = EXIF.getTag(this, "Model") || "Unknown Model";
-                    const focalLength = EXIF.getTag(this, "FocalLength") || "Unknown Focal Length";
+                    const focalLength = EXIF.getTag(this, "FocalLength") || item.getAttribute("data-lens") || "Unknown Focal Length";
                     const aperture = EXIF.getTag(this, "FNumber") || "Unknown Aperture";
                     const iso = EXIF.getTag(this, "ISOSpeedRatings") || "Unknown ISO";
                     const exposureTime = EXIF.getTag(this, "ExposureTime") || "Unknown Exposure";
 
-                    imageInfo.textContent = `${make} ${model}`;
-                    cameraInfo.textContent = `Aperture: ${aperture} | Exposure Time: ${exposureTime} | ISO: ${iso}`;
-                    lensInfo.textContent = `Focal Length: ${focalLength}`;
+                    // Update the preview with EXIF data if available
+                    cameraInfo.textContent = `Camera: ${make} ${model}`;
+                    lensInfo.textContent = `Focal Length: ${focalLength} | Aperture: ${aperture} | Exposure Time: ${exposureTime} | ISO: ${iso}`;
                 });
-
             }, 300);
         });
 
