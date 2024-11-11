@@ -86,4 +86,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listeners for navigation arrows
     rightArrow.addEventListener("click", showNextImage);
     leftArrow.addEventListener("click", showPreviousImage);
+
+    // Keyboard event listener for arrow keys
+    document.addEventListener("keydown", function(event) {
+        if (preview.style.visibility === "visible") { // Only if the preview is open
+            if (event.key === "ArrowRight") {
+                showNextImage();
+            } else if (event.key === "ArrowLeft") {
+                showPreviousImage();
+            }
+        }
+    });
 });
