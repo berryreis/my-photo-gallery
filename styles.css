@@ -65,3 +65,28 @@ h1 {
     color: #333;
     font-size: 0.9rem;
 }
+
+.left-arrow, .right-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.left-arrow {
+    left: 10px;
+}
+
+.right-arrow {
+    right: 10px;
+}
+
+.left-arrow:hover, .right-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
