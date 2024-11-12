@@ -1,100 +1,56 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const galleryItems = Array.from(document.querySelectorAll(".image-item")); // Convert NodeList to Array for easier indexing
-    const preview = document.querySelector(".preview");
-    const previewImg = document.getElementById("preview-img");
-    const imageInfo = document.getElementById("image-info");
-    const cameraInfo = document.getElementById("camera-info");
-    const lensInfo = document.getElementById("lens-info");
-    const leftArrow = document.querySelector(".left-arrow");
-    const rightArrow = document.querySelector(".right-arrow");
-    let currentIndex = -1; // Track currently previewed image
-    let hoverTimeout;
-    const exifCache = new Map();
+// Array to hold all image elements
+const images = Array.from(document.querySelectorAll('.image-item img'));
 
-    const showPreview = (index) => {
+// Preview elements
+const preview = document.querySelector('.preview');
+const previewImg = document.getElementById('preview-img');
+const imageInfo = document.getElementById('image-info');
+const cameraInfo = document.getElementById('camera-info');
+const lensInfo = document.getElementById('lens-info');
+const leftArrow = document.querySelector('.left-arrow');
+const rightArrow = document.querySelector('.right-arrow');
+
+// Track current index for navigation
+let currentIndex = 0;
+
+// Function to update the preview content
+function updatePreview(index) {
+    const imgElement = images[index];
+    previewImg.src = imgElement.src;
+
+    // Fetching image data from `data-image`, `data-camera`, and `data-lens` attributes of the parent `div`
+    const parentDiv = imgElement.closest('.image-item');
+    imageInfo.textContent = parentDiv.getAttribute('data-image') || 'No information available';
+    cameraInfo.textContent = parentDiv.getAttribute('data-camera') || '';
+    lensInfo.textContent = parentDiv.getAttribute('data-lens') || '';
+
+    // Display the preview
+    preview.style.display = 'flex';
+}
+
+// Function to handle left arrow click (previous image)
+leftArrow.addEventListener('click', () => {
+    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+    updatePreview(currentIndex);
+});
+
+// Function to handle right arrow click (next image)
+rightArrow.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % images.length;
+    updatePreview(currentIndex);
+});
+
+// Event listener for each image to open preview when clicked
+images.forEach((img, index) => {
+    img.addEventListener('click', () => {
         currentIndex = index;
-        const item = galleryItems[index];
-        
-        clearTimeout(hoverTimeout);
-
-        const imgSrc = item.querySelector("img").src;
-        previewImg.src = imgSrc;
-        imageInfo.textContent = item.getAttribute("data-image") || "Image Info Unavailable";
-        cameraInfo.textContent = `Camera: ${item.getAttribute("data-camera") || "Unknown"}`;
-        lensInfo.textContent = `Lens: ${item.getAttribute("data-lens") || "Unknown"}`;
-
-        preview.style.visibility = "visible";
-        preview.style.opacity = "1";
-
-        if (!exifCache.has(imgSrc)) {
-            EXIF.getData(item.querySelector("img"), function() {
-                const make = EXIF.getTag(this, "Make") || "Unknown Make";
-                const model = EXIF.getTag(this, "Model") || "Unknown Model";
-                const focalLength = EXIF.getTag(this, "FocalLength") || item.getAttribute("data-lens") || "Unknown Focal Length";
-                const aperture = EXIF.getTag(this, "FNumber") || "Unknown Aperture";
-                const iso = EXIF.getTag(this, "ISOSpeedRatings") || "Unknown ISO";
-                const exposureTime = EXIF.getTag(this, "ExposureTime") || "Unknown Exposure";
-
-                exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
-                updatePreviewWithExif(imgSrc);
-            });
-        } else {
-            updatePreviewWithExif(imgSrc);
-        }
-    };
-
-    const updatePreviewWithExif = (imgSrc) => {
-        const exifData = exifCache.get(imgSrc);
-        cameraInfo.textContent = `Camera: ${exifData.make} ${exifData.model}`;
-        lensInfo.textContent = `Focal Length: ${exifData.focalLength} | Aperture: ${exifData.aperture} | Exposure Time: ${exifData.exposureTime} | ISO: ${exifData.iso}`;
-    };
-
-    const hidePreview = () => {
-        hoverTimeout = setTimeout(() => {
-            preview.style.visibility = "hidden";
-            preview.style.opacity = "0";
-        }, 100);
-    };
-
-    // Event listeners for gallery items
-    galleryItems.forEach((item, index) => {
-        item.addEventListener("mouseenter", () => showPreview(index));
-        item.addEventListener("mouseleave", hidePreview);
+        updatePreview(currentIndex);
     });
+});
 
-    // Keep preview visible when hovering over it
-    preview.addEventListener("mouseenter", () => clearTimeout(hoverTimeout));
-    preview.addEventListener("mouseleave", hidePreview);
-
-    // Navigation functions
-    const showNextImage = () => {
-        if (currentIndex < galleryItems.length - 1) {
-            showPreview(currentIndex + 1);
-        } else {
-            showPreview(0); // Wrap to first image
-        }
-    };
-
-    const showPreviousImage = () => {
-        if (currentIndex > 0) {
-            showPreview(currentIndex - 1);
-        } else {
-            showPreview(galleryItems.length - 1); // Wrap to last image
-        }
-    };
-
-    // Event listeners for navigation arrows
-    rightArrow.addEventListener("click", showNextImage);
-    leftArrow.addEventListener("click", showPreviousImage);
-
-    // Keyboard event listener for arrow keys
-    document.addEventListener("keydown", function(event) {
-        if (preview.style.visibility === "visible") { // Only if the preview is open
-            if (event.key === "ArrowRight") {
-                showNextImage();
-            } else if (event.key === "ArrowLeft") {
-                showPreviousImage();
-            }
-        }
-    });
+// Optional: Close preview on clicking outside of the image
+preview.addEventListener('click', (event) => {
+    if (event.target === preview) {
+        preview.style.display = 'none';
+    }
 });
