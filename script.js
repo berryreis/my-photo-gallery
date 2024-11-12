@@ -28,12 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!exifCache.has(imgSrc)) {
             EXIF.getData(item.querySelector("img"), function() {
-                const make = EXIF.getTag(this, "Make") || "Unknown Make";
-                const model = EXIF.getTag(this, "Model") || "Unknown Model";
-                const focalLength = EXIF.getTag(this, "FocalLength") || item.getAttribute("data-lens") || "Unknown Focal Length";
-                const aperture = EXIF.getTag(this, "FNumber") || "Unknown Aperture";
-                const iso = EXIF.getTag(this, "ISOSpeedRatings") || "Unknown ISO";
-                const exposureTime = EXIF.getTag(this, "ExposureTime") || "Unknown Exposure";
+                const exifData = EXIF.getAllTags(this);
+
+                // Log the EXIF data to the console for debugging
+                console.log(exifData);  // This will print the EXIF data in the browser console
+
+                const make = exifData.Make || "Unknown Make";
+                const model = exifData.Model || "Unknown Model";
+                const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
+                const aperture = exifData.FNumber || "Unknown Aperture";
+                const iso = exifData.ISOSpeedRatings || "Unknown ISO";
+                const exposureTime = exifData.ExposureTime || "Unknown Exposure";
 
                 exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
                 updatePreviewWithExif(imgSrc);
