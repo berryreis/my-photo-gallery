@@ -1,56 +1,46 @@
-// Array to hold all image elements
-const images = Array.from(document.querySelectorAll('.image-item img'));
+document.addEventListener('DOMContentLoaded', function() {
+    const imageItems = document.querySelectorAll('.image-item');
+    const previewContainer = document.getElementById('hover-preview');
+    const previewImg = document.getElementById('preview-img');
+    const imageInfo = document.getElementById('image-info');
+    const cameraInfo = document.getElementById('camera-info');
+    const lensInfo = document.getElementById('lens-info');
 
-// Preview elements
-const preview = document.querySelector('.preview');
-const previewImg = document.getElementById('preview-img');
-const imageInfo = document.getElementById('image-info');
-const cameraInfo = document.getElementById('camera-info');
-const lensInfo = document.getElementById('lens-info');
-const leftArrow = document.querySelector('.left-arrow');
-const rightArrow = document.querySelector('.right-arrow');
+    function displayExifData(imageElement) {
+        // Set image source and data-image title
+        previewImg.src = imageElement.querySelector('img').src;
+        imageInfo.textContent = imageElement.getAttribute('data-image') || "Untitled";
 
-// Track current index for navigation
-let currentIndex = 0;
+        // Fetch and display EXIF data
+        EXIF.getData(imageElement.querySelector('img'), function() {
+            const exifData = EXIF.getAllTags(this);
+            const make = exifData.Make || "Unknown Camera Make";
+            const model = exifData.Model || "Unknown Model";
+            const focalLength = exifData.FocalLength || "Unknown Focal Length";
+            const iso = exifData.ISOSpeedRatings || "Unknown ISO";
+            const exposure = exifData.ExposureTime || "Unknown Exposure Time";
 
-// Function to update the preview content
-function updatePreview(index) {
-    const imgElement = images[index];
-    previewImg.src = imgElement.src;
-
-    // Fetching image data from `data-image`, `data-camera`, and `data-lens` attributes of the parent `div`
-    const parentDiv = imgElement.closest('.image-item');
-    imageInfo.textContent = parentDiv.getAttribute('data-image') || 'No information available';
-    cameraInfo.textContent = parentDiv.getAttribute('data-camera') || '';
-    lensInfo.textContent = parentDiv.getAttribute('data-lens') || '';
-
-    // Display the preview
-    preview.style.display = 'flex';
-}
-
-// Function to handle left arrow click (previous image)
-leftArrow.addEventListener('click', () => {
-    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
-    updatePreview(currentIndex);
-});
-
-// Function to handle right arrow click (next image)
-rightArrow.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % images.length;
-    updatePreview(currentIndex);
-});
-
-// Event listener for each image to open preview when clicked
-images.forEach((img, index) => {
-    img.addEventListener('click', () => {
-        currentIndex = index;
-        updatePreview(currentIndex);
-    });
-});
-
-// Optional: Close preview on clicking outside of the image
-preview.addEventListener('click', (event) => {
-    if (event.target === preview) {
-        preview.style.display = 'none';
+            cameraInfo.textContent = `Camera: ${make} ${model}`;
+            lensInfo.textContent = `Focal Length: ${focalLength}, ISO: ${iso}, Exposure: ${exposure}`;
+        });
     }
+
+    imageItems.forEach(imageItem => {
+        const image = imageItem.querySelector('img');
+
+        imageItem.addEventListener('mouseover', () => {
+            previewContainer.style.display = 'block';
+            displayExifData(imageItem);
+        });
+
+        imageItem.addEventListener('mousemove', (event) => {
+            // Position the preview near the cursor
+            previewContainer.style.top = `${event.pageY + 20}px`;
+            previewContainer.style.left = `${event.pageX + 20}px`;
+        });
+
+        imageItem.addEventListener('mouseout', () => {
+            previewContainer.style.display = 'none';
+        });
+    });
 });
