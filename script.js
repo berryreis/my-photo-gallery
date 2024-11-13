@@ -50,14 +50,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 const aperture = exifData.FNumber || "Unknown Aperture";
                 const iso = exifData.ISOSpeedRatings || "Unknown ISO";
                 
-                // Convert ExposureTime to 1/x format if it is a decimal
                 let exposureTime = exifData.ExposureTime;
-                if (typeof exposureTime === "number" && exposureTime < 1) {
-                    const denominator = Math.round(1 / exposureTime);
-                    exposureTime = `1/${denominator}`;
-                } else if (!exposureTime) {
-                    exposureTime = "Unknown Exposure";
-                }
+
+if (typeof exposureTime === "number") {
+    if (exposureTime < 1) {
+        const denominator = Math.round(1 / exposureTime);
+        exposureTime = `1/${denominator}`;
+    }
+} else if (typeof exposureTime === "string" && exposureTime.match(/^1\/\d+$/)) {
+    // If it's already in "1/x" format, keep it as is.
+    // No need to change the exposureTime value here.
+} else if (!exposureTime) {
+    exposureTime = "Unknown Exposure";
+}
 
                 exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
                 updatePreviewWithExif(imgSrc);
