@@ -11,6 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let hoverTimeout;
     const exifCache = new Map();
 
+    // Define the updatePreviewWithExif function first
+    const updatePreviewWithExif = (imgSrc) => {
+        const exifData = exifCache.get(imgSrc);
+        cameraInfo.textContent = `Camera: ${exifData.make} ${exifData.model}`;
+        lensInfo.textContent = `Focal Length: ${exifData.focalLength} | Aperture: ${exifData.aperture} | Exposure Time: ${exifData.exposureTime} | ISO: ${exifData.iso}`;
+    };
+
     const showPreview = (index) => {
         currentIndex = index;
         const item = galleryItems[index];
@@ -26,43 +33,38 @@ document.addEventListener("DOMContentLoaded", function () {
         preview.style.visibility = "visible";
         preview.style.opacity = "1";
 
-if (!exifCache.has(imgSrc)) {
-    EXIF.getData(item.querySelector("img"), function() {
-        const exifData = EXIF.getAllTags(this);
+        if (!exifCache.has(imgSrc)) {
+            EXIF.getData(item.querySelector("img"), function() {
+                const exifData = EXIF.getAllTags(this);
 
-        console.log(exifData);  // This will print the EXIF data in the browser console
+                console.log(exifData);  // This will print the EXIF data in the browser console
 
-        let make = exifData.Make || "Unknown Make";
-        let model = exifData.Model || "Unknown Model";
+                let make = exifData.Make || "Unknown Make";
+                let model = exifData.Model || "Unknown Model";
 
-        if (model.startsWith(make)) {
-            model = model.replace(make, "").trim();  
+                if (model.startsWith(make)) {
+                    model = model.replace(make, "").trim();  
+                }
+
+                const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
+                const aperture = exifData.FNumber || "Unknown Aperture";
+                const iso = exifData.ISOSpeedRatings || "Unknown ISO";
+                
+                // Convert ExposureTime to 1/x format if it is a decimal
+                let exposureTime = exifData.ExposureTime;
+                if (typeof exposureTime === "number" && exposureTime < 1) {
+                    const denominator = Math.round(1 / exposureTime);
+                    exposureTime = `1/${denominator}`;
+                } else if (!exposureTime) {
+                    exposureTime = "Unknown Exposure";
+                }
+
+                exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
+                updatePreviewWithExif(imgSrc);
+            });
+        } else {
+            updatePreviewWithExif(imgSrc);
         }
-
-        const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
-        const aperture = exifData.FNumber || "Unknown Aperture";
-        const iso = exifData.ISOSpeedRatings || "Unknown ISO";
-        
-        // Convert ExposureTime to 1/x format if it is a decimal
-        let exposureTime = exifData.ExposureTime;
-        if (typeof exposureTime === "number" && exposureTime < 1) {
-            const denominator = Math.round(1 / exposureTime);
-            exposureTime = `1/${denominator}`;
-        } else if (!exposureTime) {
-            exposureTime = "Unknown Exposure";
-        }
-
-        exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
-        updatePreviewWithExif(imgSrc);
-    });
-} else {
-    updatePreviewWithExif(imgSrc);
-}
-
-    const updatePreviewWithExif = (imgSrc) => {
-        const exifData = exifCache.get(imgSrc);
-        cameraInfo.textContent = `Camera: ${exifData.make} ${exifData.model}`;
-        lensInfo.textContent = `Focal Length: ${exifData.focalLength} | Aperture: ${exifData.aperture} | Exposure Time: ${exifData.exposureTime} | ISO: ${exifData.iso}`;
     };
 
     const hidePreview = () => {
@@ -113,3 +115,4 @@ if (!exifCache.has(imgSrc)) {
             }
         }
     });
+});
