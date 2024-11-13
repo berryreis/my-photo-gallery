@@ -113,4 +113,3 @@ if (!exifCache.has(imgSrc)) {
             }
         }
     });
-});
