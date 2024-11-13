@@ -26,27 +26,35 @@ document.addEventListener("DOMContentLoaded", function () {
         preview.style.visibility = "visible";
         preview.style.opacity = "1";
 
-        if (!exifCache.has(imgSrc)) {
-            EXIF.getData(item.querySelector("img"), function() {
-                const exifData = EXIF.getAllTags(this);
+if (!exifCache.has(imgSrc)) {
+    EXIF.getData(item.querySelector("img"), function() {
+        const exifData = EXIF.getAllTags(this);
 
-                // Log the EXIF data to the console for debugging
-                console.log(exifData);  // This will print the EXIF data in the browser console
+        // Log the EXIF data to the console for debugging
+        console.log(exifData);  // This will print the EXIF data in the browser console
 
-                const make = exifData.Make || "Unknown Make";
-                const model = exifData.Model || "Unknown Model";
-                const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
-                const aperture = exifData.FNumber || "Unknown Aperture";
-                const iso = exifData.ISOSpeedRatings || "Unknown ISO";
-                const exposureTime = exifData.ExposureTime || "Unknown Exposure";
-
-                exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
-                updatePreviewWithExif(imgSrc);
-            });
-        } else {
-            updatePreviewWithExif(imgSrc);
+        const make = exifData.Make || "Unknown Make";
+        const model = exifData.Model || "Unknown Model";
+        const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
+        const aperture = exifData.FNumber || "Unknown Aperture";
+        const iso = exifData.ISOSpeedRatings || "Unknown ISO";
+        
+        // Convert ExposureTime to 1/x format if it is a decimal
+        let exposureTime = exifData.ExposureTime;
+        if (typeof exposureTime === "number" && exposureTime < 1) {
+            const denominator = Math.round(1 / exposureTime);
+            exposureTime = `1/${denominator}`;
+        } else if (!exposureTime) {
+            exposureTime = "Unknown Exposure";
         }
-    };
+
+        exifCache.set(imgSrc, { make, model, focalLength, aperture, iso, exposureTime });
+        updatePreviewWithExif(imgSrc);
+    });
+} else {
+    updatePreviewWithExif(imgSrc);
+}
+
 
     const updatePreviewWithExif = (imgSrc) => {
         const exifData = exifCache.get(imgSrc);
