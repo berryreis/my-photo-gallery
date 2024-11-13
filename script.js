@@ -30,11 +30,15 @@ if (!exifCache.has(imgSrc)) {
     EXIF.getData(item.querySelector("img"), function() {
         const exifData = EXIF.getAllTags(this);
 
-        // Log the EXIF data to the console for debugging
         console.log(exifData);  // This will print the EXIF data in the browser console
 
-        const make = exifData.Make || "Unknown Make";
-        const model = exifData.Model || "Unknown Model";
+        let make = exifData.Make || "Unknown Make";
+        let model = exifData.Model || "Unknown Model";
+
+        if (model.startsWith(make)) {
+            model = model.replace(make, "").trim();  
+        }
+
         const focalLength = exifData.FocalLength || item.getAttribute("data-lens") || "Unknown Focal Length";
         const aperture = exifData.FNumber || "Unknown Aperture";
         const iso = exifData.ISOSpeedRatings || "Unknown ISO";
@@ -54,7 +58,6 @@ if (!exifCache.has(imgSrc)) {
 } else {
     updatePreviewWithExif(imgSrc);
 }
-
 
     const updatePreviewWithExif = (imgSrc) => {
         const exifData = exifCache.get(imgSrc);
