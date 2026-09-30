@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const el = list[currentIndex];
     const img = el.querySelector("img");
 
-    previewImg.src = img.src;
+    previewImg.src = img.dataset.full || img.src;
     previewImg.alt = img.alt;
     imageInfo.textContent = el.dataset.caption || img.alt;
     cameraInfo.textContent = "";
