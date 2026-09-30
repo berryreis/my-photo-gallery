@@ -1,17 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const gallery = document.getElementById("gallery");
   const items = Array.from(document.querySelectorAll(".image-item"));
   const themeGroup = document.getElementById("theme-filters");
-  const placeGroup = document.getElementById("place-filters");
+  const sortGroup = document.getElementById("sort-controls");
   const emptyState = document.getElementById("empty-state");
 
-  const state = { theme: "All", place: "All" };
+  const state = { theme: "All", sort: "newest" };
 
   function uniqueValues(attr) {
     const values = items.map((el) => el.dataset[attr]);
     return ["All", ...Array.from(new Set(values))];
   }
 
-  function buildButtons(group, key, values) {
+  function buildThemeButtons(group, values) {
     values.forEach((value) => {
       const btn = document.createElement("button");
       btn.className = "filter-btn" + (value === "All" ? " active" : "");
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = value;
       btn.dataset.value = value;
       btn.addEventListener("click", () => {
-        state[key] = value;
+        state.theme = value;
         group.querySelectorAll(".filter-btn").forEach((b) =>
           b.classList.toggle("active", b.dataset.value === value)
         );
@@ -29,15 +30,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  buildButtons(themeGroup, "theme", uniqueValues("theme"));
-  buildButtons(placeGroup, "place", uniqueValues("place"));
+  buildThemeButtons(themeGroup, uniqueValues("theme"));
+
+  sortGroup.querySelectorAll(".filter-btn[data-sort]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.sort = btn.dataset.sort;
+      sortGroup.querySelectorAll(".filter-btn").forEach((b) =>
+        b.classList.toggle("active", b === btn)
+      );
+      applySort();
+    });
+  });
+
+  function applySort() {
+    const sorted = [...items].sort((a, b) => {
+      const cmp = a.dataset.date.localeCompare(b.dataset.date);
+      return state.sort === "newest" ? -cmp : cmp;
+    });
+    sorted.forEach((el) => gallery.appendChild(el));
+  }
 
   function applyFilters() {
     let visibleCount = 0;
     items.forEach((el) => {
-      const matchesTheme = state.theme === "All" || el.dataset.theme === state.theme;
-      const matchesPlace = state.place === "All" || el.dataset.place === state.place;
-      const show = matchesTheme && matchesPlace;
+      const show = state.theme === "All" || el.dataset.theme === state.theme;
       el.classList.toggle("hidden", !show);
       if (show) visibleCount++;
     });
@@ -57,7 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = -1;
 
   function visibleItems() {
-    return items.filter((el) => !el.classList.contains("hidden"));
+    // read from live DOM order so lightbox prev/next matches the current sort
+    return Array.from(gallery.querySelectorAll(".image-item:not(.hidden)"));
   }
 
   function openPreview(index) {
@@ -113,5 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "ArrowRight") openPreview(currentIndex + 1);
   });
 
+  applySort();
   applyFilters();
 });
