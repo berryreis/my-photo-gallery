@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageInfo = document.getElementById("image-info");
   const cameraInfo = document.getElementById("camera-info");
   const lensInfo = document.getElementById("lens-info");
+  const shotInfo = document.getElementById("shot-info");
   const closeBtn = document.getElementById("preview-close");
   const leftArrow = document.querySelector(".left-arrow");
   const rightArrow = document.querySelector(".right-arrow");
@@ -89,17 +90,46 @@ document.addEventListener("DOMContentLoaded", () => {
     imageInfo.textContent = el.dataset.caption || img.alt;
     cameraInfo.textContent = "";
     lensInfo.textContent = "";
+    shotInfo.textContent = "";
 
     preview.classList.add("open");
 
-    if (window.EXIF) {
-      EXIF.getData(img, function () {
-        const make = EXIF.getTag(this, "Make") || "";
-        const model = EXIF.getTag(this, "Model") || "";
-        const lens = EXIF.getTag(this, "LensModel") || "";
-        cameraInfo.textContent = (make || model) ? `Camera: ${make} ${model}`.trim() : "";
-        lensInfo.textContent = lens ? `Lens: ${lens}` : "";
-      });
+    // Read EXIF from the original, unresized file — the proxied thumbnail/
+    // large versions have metadata stripped during resizing, so metadata
+    // is fetched separately via a hidden loader image.
+    const rawUrl = img.dataset.raw;
+    if (window.EXIF && rawUrl) {
+      const exifLoader = new Image();
+      exifLoader.crossOrigin = "anonymous";
+      exifLoader.onload = function () {
+        EXIF.getData(exifLoader, function () {
+          const make = EXIF.getTag(this, "Make") || "";
+          const model = EXIF.getTag(this, "Model") || "";
+          const lens = EXIF.getTag(this, "LensModel") || "";
+
+          const aperture = EXIF.getTag(this, "FNumber");
+          const exposure = EXIF.getTag(this, "ExposureTime");
+          const iso = EXIF.getTag(this, "ISOSpeedRatings");
+          const focal = EXIF.getTag(this, "FocalLength");
+
+          cameraInfo.textContent = (make || model) ? `${make} ${model}`.trim() : "";
+          lensInfo.textContent = lens ? `Lens: ${lens}` : "";
+
+          const shotParts = [];
+          if (aperture) shotParts.push(`f/${(aperture.numerator / aperture.denominator).toFixed(1)}`);
+          if (exposure) {
+            const secs = exposure.numerator / exposure.denominator;
+            shotParts.push(secs < 1 ? `1/${Math.round(1 / secs)}s` : `${secs}s`);
+          }
+          if (focal) shotParts.push(`${Math.round(focal.numerator / focal.denominator)}mm`);
+          if (iso) shotParts.push(`ISO ${iso}`);
+          shotInfo.textContent = shotParts.join(" · ");
+        });
+      };
+      exifLoader.onerror = function () {
+        // original file couldn't be loaded for metadata (e.g. CORS) — fail silently
+      };
+      exifLoader.src = rawUrl;
     }
   }
 
